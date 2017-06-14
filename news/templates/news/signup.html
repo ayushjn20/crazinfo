@@ -1,0 +1,53 @@
+<head>
+	<meta name="google-signin-scope" content="profile email">
+	<meta name="google-signin-client_id" content="255316092305-99uipnr6itlid3ra177b2jn8dtj20ujg.apps.googleusercontent.com">
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+</head>  
+<body>
+<div class="g-signin2" data-onsuccess="//onSignIn" data-theme="dark"></div>
+    <script>
+      function onSignIn(googleUser) {
+        // Useful data for your client-side scripts:
+        var profile = googleUser.getBasicProfile();
+        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+        console.log('Full Name: ' + profile.getName());
+        console.log('Given Name: ' + profile.getGivenName());
+        console.log('Family Name: ' + profile.getFamilyName());
+        console.log("Image URL: " + profile.getImageUrl());
+        console.log("Email: " + profile.getEmail());
+
+        // The ID token you need to pass to your backend:
+        var id_token = googleUser.getAuthResponse().id_token;
+        console.log("ID Token: " + id_token);
+      };
+    </script>
+	
+<form action="{% url 'news.views.register' %}" method="POST" enctype='multipart/form-data'>
+{% csrf_token %}
+	{{form_ucf.as_p}}
+	<label name="first_name">First Name</label>
+	<input type="text" name="first_name">
+	<label name="last_name">Last Name</label>
+	<input type="text" name="last_name">
+	<p>
+	<label type ="text" name="email">Email</label>
+	<input type="email" name="email">
+	</p>
+	{{form_up.as_p}}
+<input type="submit" value="Submit">
+</form>
+</body>
+
+{% if form_up.errors %}
+	{% for field in form_up %}
+		{% for error in field.errors %}
+		{{field.name}}
+		{{error|escape}}
+			<br>
+		{% endfor %}
+	{% endfor %}
+	{% for error in form_up.non_field_errors %}
+		{{error|escape}}
+		<br>
+	{% endfor %}
+{% endif %}

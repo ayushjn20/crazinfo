@@ -1,3 +1,5 @@
+import os
+
 """
 Django settings for newsapp project.
 
@@ -49,6 +51,14 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.request",
+)
+
 ROOT_URLCONF = 'newsapp.urls'
 
 WSGI_APPLICATION = 'newsapp.wsgi.application'
@@ -81,4 +91,27 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
+STATICFILES_DIRS = (
+	os.path.join(BASE_DIR,"static"),
+)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
+}
 STATIC_URL = '/static/'
+LOGIN_URL='/news/login/'
+LOGIN_REDIRECT_URL='/news/feeds'
+#APPEND_SLASH=True
+#url(r'^login/','django.contrib.auth.views.login')

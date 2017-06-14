@@ -1,0 +1,84 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+{% load staticfiles %}
+<script type="text/javascript">
+$(document).ready(function(){
+	console.log('{{current.sort}}')
+	console.log('{{current.src}}')
+	$("#id_sort").val('{{current.sort}}')
+	$("#id_source").val('{{current.src}}')
+	var x=0;
+	while(x < document.getElementsByClassName("save").length){
+		//console.log(x)
+		document.getElementsByClassName("save")[x].id=x;
+		x++;
+		if ($(".news-img").eq(x).attr('src')=="None"){
+			console.log("img"+x+" src found none");
+			var alt_src = '{% static "news/images/alt.png" %}'
+			$(".news-img").eq(x).attr('src', alt_src);
+		}
+	}
+	$(".save").click(function(){
+		//event.preventDefault();
+		console.log(this.id);
+		var feed_id = this.id;
+		console.log("clicked btn-id - "+ feed_id);
+		$.ajax({
+			type:"POST",
+			url:"/news/feeds/",
+			data:{'feed_id': feed_id, 
+				'source': '{{current.src}}' ,
+				'sort': '{{current.sort}}' },
+			success:function(response){},
+			complete:function(){},
+			error:function(xhr, textStatus, thrownError){}
+		});
+	});
+
+	$("#id_sort").change(function(){update();});
+	$("#id_source").change(function(){update()});
+	
+	function update(){
+		$("form").eq(0).submit();
+	}
+	
+});
+</script>
+
+
+<nav>
+	<a href = "/news/">Home</a>
+	<a href = "/news/login/">LogIn</a>
+	<a href = "/news/signup/">Sign Up</a>	
+	<a href = "/news/profile/">My Profile</a>
+	<a href = "/news/saved/">My Fav</a>
+	
+</nav>
+
+<form action="" method="POST">{% csrf_token %}
+    {{feed_form}}
+</form>
+<div><hr>
+{% load staticfiles %} 
+{% if data %}	
+	{% for element in data %}
+	<div onclick='//window.open("{{element.url}}","_blank");'>
+		<img class="news-img" src= "{{ element.urlToImage }}" alt="img-for-feed" height=100px />
+		<h4><b>{{element.title}}</b></h4>
+		<p>{{element.description}}</p>	
+		<script>
+			//console.log('{{element.saved}}');
+			if ('{{element.saved}}'==='False'){
+			document.write('<button class="save">Save</button>') 
+		}else{document.write('<button class="save" disabled>Saved</button>') }
+		</script>
+		<br>
+		<br><hr>
+	</div>	
+	{% endfor %}
+{% endif %}
+</div>
+
+<footer>
+	<p>CRAZINFO!!</p>
+</footer>
+

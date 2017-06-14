@@ -1,0 +1,40 @@
+<!--
+        <form action="{% url 'django.contrib.auth.views.login' %}" method="POST" id="login-form">
+        {% csrf_token %}
+                <label>Enter your username</label>
+                <input type="text" name="username" id="id_username" class="form-control" placeholder="Username">
+
+                <label>Enter your password</label>
+                <input type="password" name="password" id="id_password" class="form-control" placeholder="Password">
+        {% if form.errors %}
+                <p>Invalid Credentials, try again!</p>
+        {% endif %}
+                <label name="rme">Remember me</label>
+                <input type="checkbox" name="rme" value="yes">
+                <input type="submit" value="Login">
+                <input type="hidden" name="next" value="{{ next }}" />
+        </form> 
+-->
+
+
+
+
+
+
+
+
+<!--    <form action="{% url 'news.views.signup_view'%}" method="POST">
+                {% csrf_token %}
+                <label name="name" required>Full Name: </label>
+                <input type="text" name="name"><br>
+                <label name="username" required>User name: </label>
+                <input type="text" name="username" onkeyup="checkusername()"><br>
+                <label name='email' onchange="check_email()" required>Email: </label>
+                <input type="email" name="email"><br>
+                <label name="password" required>Password: </label>
+                <input type="password" name="password">
+                <label name="conf_password" onchange="conf_password()" required>Confirm Password: </label>
+                <input type="password" name="conf_password"><br>
+        <input type="submit">
+        </form>-->
+:

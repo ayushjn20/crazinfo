@@ -1,0 +1,15 @@
+
+{% block content %}
+<h2>LogIn</h2>
+<form method="POST" action='{% url "login" %}'>
+	{% csrf_token %}
+	{{form.as_p}}
+	<label name"rem_me">Remember Me</label>
+	<input type="checkbox" name="rem_me">
+	{% if form.errors %}
+		<p>Invalid credentials!! Try again</p>
+	{% endif %}
+<br>
+<input type="submit" value="Login"/>
+</form>
+{% endblock %}
