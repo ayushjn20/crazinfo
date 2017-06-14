@@ -10,6 +10,7 @@ import django.contrib.auth
 from django import forms
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 ###############
 
@@ -55,6 +56,8 @@ def feeds(request):
 						reqData.pop('saved',None)
 						f = models.feed(**reqData)
 						f.save()
+						f.source = request.POST['source']
+						f.save()
 					else:
 						f = q[0]
 						print f
@@ -80,6 +83,16 @@ def feeds(request):
 	return render(request,'news/index.html', context)
 
 ###############
+
+def discussion(request):
+	if request.POST:
+		p = request.POST.get('pg',1)
+		models.feed.objects.all()[(p-1)*5:p*5]
+	else:
+		return render(request,'news/savedfeeds.html',{'data':models.feed.objects.all().order_by('-id')[:5]})
+	
+################
+
 """
 def login_view(request):
 	if ( not(request.user.is_authenticated())):
@@ -175,7 +188,7 @@ def register(request):
 	
 	print request.user
 	print "pass-signu-0"
-	print models.UserProfile._meta.get_all_field_names()
+	print models.UserProfile._meta.get_fields()
 
 	if request.user.is_authenticated():
 		return redirect(feeds)
@@ -190,7 +203,7 @@ def register(request):
 		if ucf.is_valid() and upf.is_valid():
 			print "pass-signup-2-valid"
 			user=ucf.save()
-			#user=uf.save(icommit="false")
+			#user=uf.save(commit="false")
 			userprofile = upf.save(commit="False")
 			userprofile.user=user
 			userprofile.save()

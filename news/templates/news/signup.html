@@ -22,7 +22,7 @@
       };
     </script>
 	
-<form action="{% url 'news.views.register' %}" method="POST" enctype='multipart/form-data'>
+<form action="{% url 'signup' %}" method="POST" enctype='multipart/form-data'>
 {% csrf_token %}
 	{{form_ucf.as_p}}
 	<label name="first_name">First Name</label>

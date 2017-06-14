@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html><head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+</body>
+<nav>
+        <a href = "/news/">Home</a>
+        <a href = "/news/login/">LogIn</a>
+        <a href = "/news/signup/">Sign Up</a>
+        <a href = "/news/profile/">My Profile</a>
+        <a href = "/news/discussion/">Discussion</a>
+
+</nav>
+<script>
+//	$("#main").on('scroll',function(){
+//		if($(this).scrollTop() + $(this).innerHeight() >= $(this).scrollHeight()){console.log('reached end');}
+
+//});
+
+$(document).ready(function(){
+	$(window).scroll(function() {   
+   		if($(window).scrollTop() + $(window).height() == $(document).height()) {
+			console.log("bottom!");
+		
+   		}
+	});
+});
+</script>
+<div id="main"><hr>
+{% load staticfiles %}
+{% if data %}
+        {% for element in data %}
+        <div onclick='//window.open("{{element.url}}","_blank");'>
+                <img class="news-img" src= "{{ element.urlToImage }}" alt="img-for-feed" height=100px />
+                <h4><b>{{element.title}}</b></h4>
+                <p>{{element.description}}</p>
+		<p style="float:right; padding-right:50px;">--{{element.source}}</p><br>
+                <script>
+                        //console.log('{{element.saved}}');
+                        if ('{{element.saved}}'==='False'){
+                        document.write('<button class="save">Save</button>') 
+                }
+                </script>
+                <br>
+                <br><hr>
+        </div>
+        {% endfor %}
+{% endif %}
+</div>
+</body>
+</html>

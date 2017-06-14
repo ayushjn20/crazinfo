@@ -24,7 +24,7 @@ SECRET_KEY = 'f50_i!-#i4v7u$!dqutwp3trr!wn5&v_mwf9j4dw1&m$97qzn%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+#TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'news',
+    'rest_framework',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -51,14 +52,33 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.request",
-)
-
+#TEMPLATE_CONTEXT_PROCESSORS = (
+#    "django.contrib.auth.context_processors.auth",
+ #   "django.core.context_processors.debug",
+  #  "django.core.context_processors.i18n",
+  #  "django.core.context_processors.media",
+ #   "django.core.context_processors.request",
+#)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+	'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'debug':DEBUG,
+	},
+    },
+]
 ROOT_URLCONF = 'newsapp.urls'
 
 WSGI_APPLICATION = 'newsapp.wsgi.application'
@@ -112,6 +132,6 @@ LOGGING = {
 }
 STATIC_URL = '/static/'
 LOGIN_URL='/news/login/'
-LOGIN_REDIRECT_URL='/news/feeds'
+LOGIN_REDIRECT_URL='/news/'
 #APPEND_SLASH=True
 #url(r'^login/','django.contrib.auth.views.login')

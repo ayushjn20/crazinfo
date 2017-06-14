@@ -3,7 +3,7 @@ from news.models import feed, UserProfile
 
 # Register your models here.
 class feedAdmin(admin.ModelAdmin):
-	fields = ['title','description','author','url','urlToImage','publishedAt','likes','users']
+	fields = ['title','description','source','author','url','urlToImage','publishedAt','users']
 
 admin.site.register(feed, feedAdmin)
 	
