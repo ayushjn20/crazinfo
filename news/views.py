@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse, HttpRequest, JsonResponse
 import json
 from news import functions, models
 from django.contrib.auth import authenticate, login
@@ -11,7 +11,9 @@ from django import forms
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+from news.serializers import FeedSerializer, UserSerializer
 ###############
 
 news_sources=(
@@ -83,11 +85,14 @@ def feeds(request):
 	return render(request,'news/index.html', context)
 
 ###############
-
+@csrf_exempt
 def discussion(request):
 	if request.POST:
-		p = request.POST.get('pg',1)
-		models.feed.objects.all()[(p-1)*5:p*5]
+		p = int(request.POST.get('pg','1'))
+		nextfeeds = models.feed.objects.all()[(p-1)*5:p*5]
+		serializer = FeedSerializer(nextfeeds, many=True)
+		print type(serializer.data)
+		return JsonResponse(serializer.data, safe=False)
 	else:
 		return render(request,'news/savedfeeds.html',{'data':models.feed.objects.all().order_by('-id')[:5]})
 	

@@ -21,10 +21,24 @@
 $(document).ready(function(){
 	$(window).scroll(function() {   
    		if($(window).scrollTop() + $(window).height() == $(document).height()) {
-			console.log("bottom!");
-		
+			//console.log("bottom!");		
    		}
 	});
+
+var pg=1;
+	$("#nextpg-btn").click(function(){
+		console.log('btn-more-content')
+		++pg
+		$.ajax({
+			type:"POST",
+			url:"/news/discussion/",
+			data:{'pg':pg,},
+			success:function(response){
+				printconsole(response);	}
+			
+			});
+	});
+function printconsole(response){console.log(response)}
 });
 </script>
 <div id="main"><hr>
@@ -48,5 +62,7 @@ $(document).ready(function(){
         {% endfor %}
 {% endif %}
 </div>
+{% csrf_token %}
+<button id="nextpg-btn">Show More</button>
 </body>
 </html>

@@ -29,7 +29,9 @@ $(document).ready(function(){
 			data:{'feed_id': feed_id, 
 				'source': '{{current.src}}' ,
 				'sort': '{{current.sort}}' },
-			success:function(response){},
+			success:function(response){ 
+				$("#"+feed_id).addClass('disabled');
+			},
 			complete:function(){},
 			error:function(xhr, textStatus, thrownError){}
 		});
