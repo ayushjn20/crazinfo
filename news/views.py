@@ -13,7 +13,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from news.serializers import FeedSerializer, UserSerializer
+from rest_framework import status
+from news.serializers import FeedSerializer, UserSerializer, CommentSerializer, ReplySerializer
 ###############
 
 news_sources=(
@@ -87,15 +88,25 @@ def feeds(request):
 ###############
 @csrf_exempt
 def discussion(request):
-	if request.POST:
+	if request.method == 'POST':
+		print "discussion-POST-pass0"
 		p = int(request.POST.get('pg','1'))
 		nextfeeds = models.feed.objects.all()[(p-1)*5:p*5]
 		serializer = FeedSerializer(nextfeeds, many=True)
 		print type(serializer.data)
 		return JsonResponse(serializer.data, safe=False)
 	else:
-		return render(request,'news/savedfeeds.html',{'data':models.feed.objects.all().order_by('-id')[:5]})
-	
+		print 'discussion-initial'
+		return render(request,'news/savedfeeds.html')
+@csrf_exempt
+def comment(request):
+	if request.method == 'POST':
+		print 'loading comm feed-'+request.POST['feed_id']
+		feed_id = int(request.POST['feed_id'])
+		comments = models.comment.objects.filter(key__id = feed_id)
+		serializer = CommentSerializer(comments, many=True)
+		print serializer.data
+		return JsonResponse(serializer.data, safe=False)
 ################
 
 """

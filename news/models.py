@@ -23,16 +23,21 @@ class UserProfile(models.Model):
 	phoneNo = models.CharField(max_length=12,null=True)
 	Bio = models.TextField(max_length=300,null = True)
 	
-	def __unicode__(self):
-		return self.phoneNo
+	#def __unicode__(self):
+	#	return self.user__username
 
 class comment(models.Model):
 	key = models.ForeignKey('feed')
-	userkey=models.ForeignKey(User, null=True, blank=True)
+	user=models.ForeignKey(User, null=True, blank=True)
 	comment = models.TextField()
-	
+
+	#def __unicode__(self):
+	#	return self.id
 	
 class reply(models.Model):
 	reply = models.TextField()
 	key = models.ForeignKey('comment')
-	userkey = models.ForeignKey(User, null=True, blank=True)
+	user = models.ForeignKey(User, null=True, blank=True)
+
+	#def __unicode__(self):
+	#	return self.id

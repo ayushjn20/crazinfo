@@ -9,5 +9,5 @@ urlpatterns = [
 	url(r'^discussion/$',views.discussion, name='discussion'),
 	url(r'^login/$',views.login_view, name='login'),
 	url(r'^signup/$', views.register, name='signup'),
-	
+	url(r'^discussion/comments/$',views.comment, name='comment')	
 ]

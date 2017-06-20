@@ -12,44 +12,16 @@
         <a href = "/news/discussion/">Discussion</a>
 
 </nav>
-<script>
-//	$("#main").on('scroll',function(){
-//		if($(this).scrollTop() + $(this).innerHeight() >= $(this).scrollHeight()){console.log('reached end');}
-
-//});
-
-$(document).ready(function(){
-	$(window).scroll(function() {   
-   		if($(window).scrollTop() + $(window).height() == $(document).height()) {
-			//console.log("bottom!");		
-   		}
-	});
-
-var pg=1;
-	$("#nextpg-btn").click(function(){
-		console.log('btn-more-content')
-		++pg
-		$.ajax({
-			type:"POST",
-			url:"/news/discussion/",
-			data:{'pg':pg,},
-			success:function(response){
-				printconsole(response);	}
-			
-			});
-	});
-function printconsole(response){console.log(response)}
-});
-</script>
+{% load static %}
 <div id="main"><hr>
-{% load staticfiles %}
+<!--{% load staticfiles %}
 {% if data %}
         {% for element in data %}
         <div onclick='//window.open("{{element.url}}","_blank");'>
                 <img class="news-img" src= "{{ element.urlToImage }}" alt="img-for-feed" height=100px />
                 <h4><b>{{element.title}}</b></h4>
                 <p>{{element.description}}</p>
-		<p style="float:right; padding-right:50px;">--{{element.source}}</p><br>
+		<p style="float:right; padding-right:50px;">-{{element.source}}</p><br>
                 <script>
                         //console.log('{{element.saved}}');
                         if ('{{element.saved}}'==='False'){
@@ -60,9 +32,78 @@ function printconsole(response){console.log(response)}
                 <br><hr>
         </div>
         {% endfor %}
-{% endif %}
+{% endif %} -->
 </div>
 {% csrf_token %}
-<button id="nextpg-btn">Show More</button>
+
 </body>
+<script>
+
+
+$(document).ready(function(){
+
+var pg = 0; var x = 0;
+load()
+var done = 'False';
+
+/*function updateImg(){
+while x< $('.news-img').length{
+if ($(".news-img").eq(x).attr('src')=="None"){
+	console.log("img"+x+" src found none");
+        var alt_src = '{% static "news/images/alt.png" %}'
+        $(".news-img").eq(x).attr('src', alt_src);
+	x++;}
+}}*/
+
+$(window).scroll(function() {   
+   if($(window).scrollTop() + $(window).height() == $(document).height() && done==='False' ) { console.log('bottom!')
+		load();}
+});
+
+function load(){
+	++pg
+	console.log('btn-more-contentpg-'+pg)
+	$.ajax({
+		type:"POST",
+		url:"/news/discussion/",
+		data:{'pg':pg,},
+		success:function(response){
+			append_data(response);},
+		statusCode:{ 
+			500: function() {done='True' }}	
+		});
+	//changeBtn();
+}
+
+function append_data(response){
+	console.log(response);
+	for (var key in response){
+	$('<div><img class="news-img" src="'+response[key].urlToImage+'" alt="img-for-feed" height=100px><h4><b>'+response[key].title+'</b></h4><p>'+response[key].description+'</p><p style="float:right; padding-right:50px">--'+response[key].source+'</p><div id="comm-'+response[key].id+'"></div><br><button class="comments" id="'+response[key].id+'">Comments</button><br><br></div><hr>').appendTo("#main")
+}
+}
+
+$(document).on('click','.comments', function(){
+//	console.log('btn-comm')
+	var feed_id = this.id;
+	console.log('load comm feed-'+feed_id);
+	$.ajax({
+		type:'POST',
+		url:'/news/discussion/comments/',
+		data:{'feed_id':feed_id,},
+		success: function(response){load_comm(response,feed_id); console.log(response)}
+	});
+});
+
+function load_comm(response, feed_id){
+	for (var key in response){
+		$('#comm-'+feed_id).append('<div><b>'+response[key].user.username+': </b><span> '+response[key].comment+'</span>')
+}
+$('#comm-'+feed_id).append('<form id="comm"><label><b>{{request.user.username}}: </b></label><input type="text" name="comment"></form>')
+}
+
+});
+
+
+
+</script>
 </html>
