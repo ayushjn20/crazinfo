@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'news',
     'rest_framework',
+    'channels'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -133,6 +134,5 @@ LOGGING = {
 }
 STATIC_URL = '/static/'
 LOGIN_URL='/news/login/'
-LOGIN_REDIRECT_URL='/news/'
-#APPEND_SLASH=True
-#url(r'^login/','django.contrib.auth.views.login')
+LOGIN_REDIRECT_URL='/news/':w
+

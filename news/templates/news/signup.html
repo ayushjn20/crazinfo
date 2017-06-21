@@ -30,24 +30,14 @@
 	<label name="last_name">Last Name</label>
 	<input type="text" name="last_name">
 	<p>
-	<label type ="text" name="email">Email</label>
+	<label name="email">Email</label>
 	<input type="email" name="email">
 	</p>
 	{{form_up.as_p}}
 <input type="submit" value="Submit">
 </form>
+Already have an account, log in <a href='/news/login'>here</a>
 </body>
-
-{% if form_up.errors %}
-	{% for field in form_up %}
-		{% for error in field.errors %}
-		{{field.name}}
-		{{error|escape}}
-			<br>
-		{% endfor %}
-	{% endfor %}
-	{% for error in form_up.non_field_errors %}
-		{{error|escape}}
-		<br>
-	{% endfor %}
-{% endif %}
+<script>
+document.alert('{% if form_up.errors %}{% for field in form_up %}{% for error in field.errors %}{{field.name}}{{error|escape}}{% endfor %}{% endfor %}{% for error in form_up.non_field_errors %}{{error|escape}}{% endfor %}{% endif %}');
+</script>

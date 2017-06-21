@@ -9,5 +9,7 @@ urlpatterns = [
 	url(r'^discussion/$',views.discussion, name='discussion'),
 	url(r'^login/$',views.login_view, name='login'),
 	url(r'^signup/$', views.register, name='signup'),
-	url(r'^discussion/comments/$',views.comment, name='comment')	
+	url(r'^discussion/comments/$',views.comment, name='comment'),	
+	url(r'^logout/$',auth_views.logout,{'next_page':'/news/'}, name='logout'),
+	url(r'^discussion/comment_save/$',views.comment_save, name='comment_save',)
 ]

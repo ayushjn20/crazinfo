@@ -39,8 +39,8 @@ class src_form(forms.Form):
 	source = forms.ChoiceField(choices=news_sources)
 	#print news_sources
 	sort = forms.ChoiceField(choices=sortBy)
-@csrf_exempt
 @login_required
+@csrf_exempt
 def feeds(request):
 	print request.user
 	print 'feed form pass 0'
@@ -70,7 +70,8 @@ def feeds(request):
 				 	print "pass2"
 
 			else:
-				return redirect(login)
+				print "no user logged in"
+				return redirect('/news/login/')
 	
 		current={'src':request.POST["source"], 'sort':request.POST["sort"]}
 		data = functions.get_data(request.POST["sort"], request.POST["source"],request)
@@ -86,6 +87,7 @@ def feeds(request):
 	return render(request,'news/index.html', context)
 
 ###############
+@login_required
 @csrf_exempt
 def discussion(request):
 	if request.method == 'POST':
@@ -107,6 +109,11 @@ def comment(request):
 		serializer = CommentSerializer(comments, many=True)
 		print serializer.data
 		return JsonResponse(serializer.data, safe=False)
+@csrf_exempt
+def comment_save(request):
+	if request.method == 'POST':
+		c = models.comment(comment = request.POST['comment'], key = models.feed.objects.filter(id = int(request.POST['feed_id']))[0], user = request.user)
+		c.save()
 ################
 
 """
@@ -193,7 +200,6 @@ def signup_form(request):
 
 #################
 class UserProfileForm(forms.ModelForm):
-
 	class Meta:
 		model=models.UserProfile
 		exclude=('user',)

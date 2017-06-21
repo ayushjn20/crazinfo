@@ -6,11 +6,9 @@
 </body>
 <nav>
         <a href = "/news/">Home</a>
-        <a href = "/news/login/">LogIn</a>
-        <a href = "/news/signup/">Sign Up</a>
-        <a href = "/news/profile/">My Profile</a>
+       <a href = "/news/profile/">My Profile</a>
         <a href = "/news/discussion/">Discussion</a>
-
+	<a href = "/news/logout/">LogOut</a>
 </nav>
 {% load static %}
 <div id="main"><hr>
@@ -37,6 +35,7 @@
 {% csrf_token %}
 
 </body>
+
 <script>
 
 
@@ -98,8 +97,32 @@ function load_comm(response, feed_id){
 	for (var key in response){
 		$('#comm-'+feed_id).append('<div><b>'+response[key].user.username+': </b><span> '+response[key].comment+'</span>')
 }
-$('#comm-'+feed_id).append('<form id="comm"><label><b>{{request.user.username}}: </b></label><input type="text" name="comment"></form>')
+$('#comm-'+feed_id).append('<label><b>{{request.user.username}}: </b></label><input class="input-comm" id="input-comm-'+feed_id+'" type="text" name="comment" required>')
+$("#"+feed_id).attr('class','comments-close');
+$("#"+feed_id).text('Close');
 }
+ 
+$(document).on('click','.comments-close', function(){
+		$("#comm-"+this.id).empty();
+		$("#"+this.id).attr('class','comments');
+		$("#"+this.id).text('Comments');
+});
+
+$(document).on('keypress', '.input-comm', function(event){
+	if(event.which == 13){
+		var feed_id = this.id.replace('input-comm-','')
+		console.log('comm to '+feed_id+$("#"+this.id).val());
+		var comment = $("#"+this.id).val()
+		$.ajax({
+			type: "POST",
+			url: "comment_save/",
+			data:{'feed_id':feed_id,'comment':comment},
+			success:{},
+			error:{}
+		});
+		//$(this.id).submit();
+	}
+});
 
 });
 
