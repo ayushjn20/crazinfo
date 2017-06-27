@@ -40,7 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'news',
     'rest_framework',
-    'channels'
+    'channels',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -109,7 +109,12 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgiref.inmemory.ChannelLayer",
+        "ROUTING": "news.routing.channel_routing",
+    },
+}
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
@@ -134,5 +139,4 @@ LOGGING = {
 }
 STATIC_URL = '/static/'
 LOGIN_URL='/news/login/'
-LOGIN_REDIRECT_URL='/news/':w
-
+LOGIN_REDIRECT_URL='/news/'
