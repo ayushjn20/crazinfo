@@ -77,7 +77,7 @@ function load(){
 function append_data(response){
 	console.log(response);
 	for (var key in response){
-	$('<div><img class="news-img" src="'+response[key].urlToImage+'" alt="img-for-feed" height=100px><h4><b>'+response[key].title+'</b></h4><p>'+response[key].description+'</p><p style="float:right; padding-right:50px">--'+response[key].source+'</p><div id="comm-'+response[key].id+'"></div><br><button class="comments" id="'+response[key].id+'">Comments</button><br><br></div><hr>').appendTo("#main")
+	$('<div><img class="news-img" src="'+response[key].urlToImage+'" alt="img-for-feed" height=100px><h4><b>'+response[key].title+'</b></h4><p>'+response[key].description+'</p><p style="float:right; padding-right:50px">--'+response[key].source+'</p><br><br><div id="comm-'+response[key].id+'"></div><br><button class="comments" id="'+response[key].id+'">Comments</button><br><br></div><hr>').appendTo("#main")
 }
 }
 
@@ -90,14 +90,49 @@ $(document).on('click','.comments', function(){
 		url:'/news/discussion/comments/',
 		data:{'feed_id':feed_id,},
 		success: function(response){load_comm(response,feed_id); console.log(response)}
+	
 	});
+	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+	var socket = new WebSocket(ws_scheme + '://' + window.location.host + '/news/'+feed_id);
+	
+	
+	console.log(socket)
+	socket.onmessage = function(message){
+		console.log(message);
+		data = JSON.parse(message.data)
+		feed_id = String(data.key)
+		console.log()
+		$('#new-comm-'+feed_id).append('<b>'+data.user.username+': </b><span> '+data.comment+'</span>')	
+	}
+
+	$(document).on('keypress', '.input-comm', function(event){
+		if(event.which == 13 && $("#"+this.id).val()!==''){
+			var feed_id = this.id.replace('input-comm-','')
+			console.log('comm to '+feed_id+$("#"+this.id).val());
+			var comment = $("#"+this.id).val()
+			var message={'feed_id':feed_id, 'comment':comment}
+			socket.send(JSON.stringify(message))			
+			$("#"+this.id).val('')	
+		/*	$.ajax({
+			type: "POST",
+			url: "comment_save/",
+			data:{'feed_id':feed_id,'comment':comment},
+			success:{},
+			error:{}
+		});*/
+		//$(this.id).submit();
+
+		}
+	});
+
 });
+
 
 function load_comm(response, feed_id){
 	for (var key in response){
-		$('#comm-'+feed_id).append('<div><b>'+response[key].user.username+': </b><span> '+response[key].comment+'</span>')
+		$('#comm-'+feed_id).append('<div><b>'+response[key].user.username+': </b><span> '+response[key].comment+'</span></div>')
 }
-$('#comm-'+feed_id).append('<label><b>{{request.user.username}}: </b></label><input class="input-comm" id="input-comm-'+feed_id+'" type="text" name="comment" required>')
+$('#comm-'+feed_id).append('<div id = "new-comm-'+feed_id+'"></div><label><b>{{request.user.username}}: </b></label><input class="input-comm" id="input-comm-'+feed_id+'" type="text" name="comment" required>')
 $("#"+feed_id).attr('class','comments-close');
 $("#"+feed_id).text('Close');
 }
@@ -108,25 +143,7 @@ $(document).on('click','.comments-close', function(){
 		$("#"+this.id).text('Comments');
 });
 
-$(document).on('keypress', '.input-comm', function(event){
-	if(event.which == 13){
-		var feed_id = this.id.replace('input-comm-','')
-		console.log('comm to '+feed_id+$("#"+this.id).val());
-		var comment = $("#"+this.id).val()
-		$.ajax({
-			type: "POST",
-			url: "comment_save/",
-			data:{'feed_id':feed_id,'comment':comment},
-			success:{},
-			error:{}
-		});
-		//$(this.id).submit();
-	}
 });
-
-});
-
-
 
 </script>
 </html>
