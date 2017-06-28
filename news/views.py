@@ -107,7 +107,7 @@ def comment(request):
 		feed_id = int(request.POST['feed_id'])
 		comments = models.comment.objects.filter(key__id = feed_id)
 		serializer = CommentSerializer(comments, many=True)
-		print serializer.data
+		#print serializer.data
 		return JsonResponse(serializer.data, safe=False)
 @csrf_exempt
 def comment_save(request):

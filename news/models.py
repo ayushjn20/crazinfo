@@ -41,3 +41,8 @@ class reply(models.Model):
 
 	#def __unicode__(self):
 	#	return self.id
+
+class Room(models.Model):
+	name = models.TextField()
+	label = models.SlugField(unique=True)
+
