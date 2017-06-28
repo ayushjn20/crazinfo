@@ -14,17 +14,19 @@ class FeedSerializer(serializers.Serializer):
 	def create(self, validated_data):
 		return feed.objects.create(**validated_data)
 '''
-'''
+
 class UserProfileSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = UserProfile
 		fields = ('dp',)
-'''
-class UserSerializer(serializers.ModelSerializer):
+
+class UserSerializer_comments(serializers.ModelSerializer):
 	#dp = UserProfileSerializer(read_only = True)
 	class Meta:
 		model = User
 		fields = ('username',)
+
+class FeedSerializer
 
 class FeedSerializer(serializers.ModelSerializer):
 	users = UserSerializer(read_only=True, many=True)

@@ -11,5 +11,6 @@ urlpatterns = [
 	url(r'^signup/$', views.register, name='signup'),
 	url(r'^discussion/comments/$',views.comment, name='comment'),	
 	url(r'^logout/$',auth_views.logout,{'next_page':'/news/'}, name='logout'),
-	url(r'^discussion/comment_save/$',views.comment_save, name='comment_save',)
+	url(r'^discussion/comment_save/$',views.comment_save, name='comment_save'),
+	url(r'^profile/(?P<username>[a-zA-Z0-9]+)$', views.profile),
 ]

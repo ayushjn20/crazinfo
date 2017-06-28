@@ -206,8 +206,7 @@ class UserProfileForm(forms.ModelForm):
 		#fields=('dp','phoneNo', 'Bio')
 
 	
-def register(request):
-	
+def register(request):	
 	print request.user
 	print "pass-signu-0"
 	print models.UserProfile._meta.get_fields()
@@ -248,3 +247,9 @@ def register(request):
 	'form_ucf':ucf,
 	}
 	return render(request,'news/signup.html',context)
+
+def profile(request, username):
+	print "profile-"+username
+	user = get_object_or_404(User, username = username)
+	userprof = get_object_or_404(models.UserProfile, user = user)
+	return render(request,'news/user_profile.html', {'user':user, 'userprof' : userprof})
