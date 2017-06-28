@@ -9,7 +9,7 @@ class feedAdmin(admin.ModelAdmin):
 admin.site.register(feed, feedAdmin)
 	
 class UP_Admin(admin.ModelAdmin):
-	list_display = ['id','user','phoneNo','Bio']
+	list_display = ['user','phoneNo','Bio']
 	fields = ['dp','Bio','user', 'phoneNo']
 admin.site.register(UserProfile, UP_Admin)
 

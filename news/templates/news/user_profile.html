@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
 <script>
-console.log(user)
+console.log('{{data.username}}')
 </script>
 <body>
 <form>
-{% for key,value in user %}
+{% if data %}
+YES
 	<tr>
-		<th>{{key}}<th>
-		<td>{{value}}</td>
+		<th><th>
+		<td></td>
 	</tr>
-{% endfor %}
+{% endif %}
 </form>
 </body>
 </html>

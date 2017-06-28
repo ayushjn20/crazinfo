@@ -14,7 +14,7 @@ from django.core.paginator import Paginator
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework import status
-from news.serializers import FeedSerializer, UserSerializer, CommentSerializer, ReplySerializer
+from news.serializers import FeedSerializer,CommentSerializer, UserSerializer 
 ###############
 
 news_sources=(
@@ -248,8 +248,12 @@ def register(request):
 	}
 	return render(request,'news/signup.html',context)
 
+###############
+
 def profile(request, username):
 	print "profile-"+username
 	user = get_object_or_404(User, username = username)
-	userprof = get_object_or_404(models.UserProfile, user = user)
-	return render(request,'news/user_profile.html', {'user':user, 'userprof' : userprof})
+	#userprof = get_object_or_404(models.UserProfile, user = user)
+	serializer = UserSerializer(user)
+	print serializer.data
+	return render(request,'news/user_profile.html', {'data':serializer.data,})

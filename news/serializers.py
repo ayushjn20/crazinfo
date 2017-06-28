@@ -14,32 +14,47 @@ class FeedSerializer(serializers.Serializer):
 	def create(self, validated_data):
 		return feed.objects.create(**validated_data)
 '''
-
 class UserProfileSerializer(serializers.ModelSerializer):
+	dp_url = serializers.SerializerMethodField() 
 	class Meta:
 		model = UserProfile
-		fields = ('dp',)
-
-class UserSerializer_comments(serializers.ModelSerializer):
-	#dp = UserProfileSerializer(read_only = True)
+		fields = ('dp_url','phoneNo','Bio')
+	def get_dp_url(self,obj):
+		return obj.dp.url
+		
+class UserSerializer(serializers.ModelSerializer):
+	userprofile = UserProfileSerializer(read_only = True)
 	class Meta:
 		model = User
-		fields = ('username',)
+		fields = ('userprofile','username','first_name','last_name','email') 
 
-class FeedSerializer
+class UserProfileSerializer_red(serializers.ModelSerializer):
+	dp_url = serializers.SerializerMethodField() 
+	class Meta:
+		model = UserProfile
+		fields = ('dp_url',)
+	def get_dp_url(self,obj):
+		return obj.dp.url
+		
+class UserSerializer_red(serializers.ModelSerializer):
+	userprofile = UserProfileSerializer_red(read_only = True)
+	class Meta:
+		model = User
+		fields = ('username','userprofile')
 
 class FeedSerializer(serializers.ModelSerializer):
-	users = UserSerializer(read_only=True, many=True)
+	users = UserSerializer_red(read_only=True, many=True)
 	class Meta:
 		model = feed
 		fields = ('id','title','description','url','urlToImage','publishedAt','users','source')
+
 class CommentSerializer(serializers.ModelSerializer):
-	user = UserSerializer(read_only=True)
+	user = UserSerializer_red(read_only=True)
 	class Meta:
 		model = comment
 		fields = ('user','comment','key')
 class ReplySerializer(serializers.ModelSerializer):
-	user = UserSerializer(read_only=True)
+	user = UserSerializer_red(read_only=True)
 	class Meta:
 		model = comment
 		fields = ('user','reply','key')

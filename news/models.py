@@ -18,7 +18,7 @@ class feed(models.Model):
 		return self.title
 
 class UserProfile(models.Model):
-	user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+	user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True, blank=True)
 	dp = models.ImageField(storage=fs , null=True , blank=True)
 	phoneNo = models.CharField(max_length=12,null=True)
 	Bio = models.TextField(max_length=300,null = True)
