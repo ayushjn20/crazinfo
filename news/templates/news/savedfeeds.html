@@ -6,7 +6,7 @@
 </body>
 <nav>
         <a href = "/news/">Home</a>
-       <a href = "/news/profile/">My Profile</a>
+       <a href = "/news/profile/{{request.user.uesrname}}">My Profile</a>
         <a href = "/news/discussion/">Discussion</a>
 	<a href = "/news/logout/">LogOut</a>
 </nav>
@@ -55,13 +55,13 @@ if ($(".news-img").eq(x).attr('src')=="None"){
 }}*/
 
 $(window).scroll(function() {   
-   if($(window).scrollTop() + $(window).height() == $(document).height() && done==='False' ) { console.log('bottom!')
+   if($(window).scrollTop() + $(window).height() == $(document).height() && done==='False' ) { //console.log('bottom!')
 		load();}
 });
 
 function load(){
 	++pg
-	console.log('btn-more-contentpg-'+pg)
+	//console.log('btn-more-contentpg-'+pg)
 	$.ajax({
 		type:"POST",
 		url:"/news/discussion/",
@@ -77,38 +77,43 @@ function load(){
 function append_data(response){
 	console.log(response);
 	for (var key in response){
-	$('<div><img class="news-img" src="'+response[key].urlToImage+'" alt="img-for-feed" height=100px><h4><b>'+response[key].title+'</b></h4><p>'+response[key].description+'</p><p style="float:right; padding-right:50px">--'+response[key].source+'</p><br><br><div id="comm-'+response[key].id+'"></div><br><button class="comments" id="'+response[key].id+'">Comments</button><br><br></div><hr>').appendTo("#main")
+		$('<div><div id="usrs-'+response[key].id+'"></div><br><img class="news-img" src="'+response[key].urlToImage+'" alt="img-for-feed" height=100px><h4><b>'+response[key].title+'</b></h4><p>'+response[key].description+'</p><p style="float:right; padding-right:50px">--'+response[key].source+'</p><br><br><div id="comm-'+response[key].id+'"></div><br><button class="comments" id="'+response[key].id+'">Comments</button><br><br></div><hr>').appendTo("#main");
+		for (var k in response[key].users){
+		$('#usrs-'+response[key].id).append('<a href="/news/profile/'+response[key].users[k].username+'">'+response[key].users[k].username+'</a> , ')
+	}
+	
 }
 }
 
 $(document).on('click','.comments', function(){
 //	console.log('btn-comm')
 	var feed_id = this.id;
-	console.log('load comm feed-'+feed_id);
+	//console.log('load comm feed-'+feed_id);
 	$.ajax({
 		type:'POST',
 		url:'/news/discussion/comments/',
 		data:{'feed_id':feed_id,},
-		success: function(response){load_comm(response,feed_id); console.log(response)}
+		success: function(response){load_comm(response,feed_id); //console.log(response)
+}
 	
 	});
 	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 	var socket = new WebSocket(ws_scheme + '://' + window.location.host + '/news/'+feed_id);
 	
 	
-	console.log(socket)
+	//console.log(socket)
 	socket.onmessage = function(message){
-		console.log(message);
+	//	console.log(message);
 		data = JSON.parse(message.data)
 		feed_id = String(data.key)
-		console.log()
-		$('#new-comm-'+feed_id).append('<b>'+data.user.username+': </b><span> '+data.comment+'</span>')	
+		//console.log()
+		$('#new-comm-'+feed_id).append('<b><a href="/news/profile/'+data.user.username+'">'+data.user.username+': </a></b><span> '+data.comment+'</span>')	
 	}
 
 	$(document).on('keypress', '.input-comm', function(event){
 		if(event.which == 13 && $("#"+this.id).val()!==''){
 			var feed_id = this.id.replace('input-comm-','')
-			console.log('comm to '+feed_id+$("#"+this.id).val());
+	//		console.log('comm to '+feed_id+$("#"+this.id).val());
 			var comment = $("#"+this.id).val()
 			var message={'feed_id':feed_id, 'comment':comment}
 			socket.send(JSON.stringify(message))			
@@ -130,9 +135,9 @@ $(document).on('click','.comments', function(){
 
 function load_comm(response, feed_id){
 	for (var key in response){
-		$('#comm-'+feed_id).append('<div><b>'+response[key].user.username+': </b><span> '+response[key].comment+'</span></div>')
+		$('#comm-'+feed_id).append('<div><b><a href="/news/profile/'+response[key].user.username+'">'+response[key].user.username+'</a>: </b><span> '+response[key].comment+'</span></div>')
 }
-$('#comm-'+feed_id).append('<div id = "new-comm-'+feed_id+'"></div><label><b>{{request.user.username}}: </b></label><input class="input-comm" id="input-comm-'+feed_id+'" type="text" name="comment" required>')
+$('#comm-'+feed_id).append('<div id = "new-comm-'+feed_id+'"></div><label><b><a href="/news/profile/{{request.user.username}}">{{request.user.username}}</a>: </b></label><input class="input-comm" id="input-comm-'+feed_id+'" type="text" name="comment" required>')
 $("#"+feed_id).attr('class','comments-close');
 $("#"+feed_id).text('Close');
 }

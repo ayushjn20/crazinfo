@@ -4,8 +4,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 <script>
-$(document).ready(function(){
-	
+$(document).ready(function(){	
 		{% if notify %}
 			alert('{{notify}}');
 		{% endif %}
@@ -26,6 +25,11 @@ if ('{{auth}}' === 'True') {
 
 	console.log('{{data.username}}')
 	
+	$('img').dblclick(function(){
+		console.log('img-dbl-clk')
+		
+	})
+
 	$('.f-span').click(function(){
 	//console.log(this.id)
 	$(this).hide()
@@ -72,7 +76,7 @@ if ('{{auth}}' === 'True') {
 		$('#profile-form').submit()
 	});
 
-
+	
 }});
 </script>
 
@@ -81,6 +85,12 @@ if ('{{auth}}' === 'True') {
 #profile-form>div>input, button{
 display:none;
 text-align:center;
+}
+
+img{
+	max-height:300px;
+	width:auto;
+	height:auto;
 }
 
 #username-div, #in-username{
@@ -118,6 +128,13 @@ text-align:center;
 
 
 <body>
+<nav>
+        <a href = "/news/">Home</a>
+        <a href = "/news/profile/{{request.user.username}}">My Profile</a>
+        <a href = "/news/discussion">Discussion</a>
+        <a href = "/news/logout">Log Out</a>
+</nav>
+
 {% load static %}
 {% if data %}
 <form action='' method='POST' id="profile-form">
@@ -132,7 +149,7 @@ text-align:center;
 	<span class='f-span' id='bio' title='Bio'>{{data.userprofile.Bio}}</span>
 	<input type='text' name='Bio' class='f-input' id='in-bio'>
 	</div><br>
-<br><br><br>
+<br><br>
 {% csrf_token %}
 	<div>
 		<b>Name: </b>

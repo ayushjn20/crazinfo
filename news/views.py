@@ -35,21 +35,21 @@ sortBy=(
 
 
 class src_form(forms.Form):
-	print 'feed form pass 2 class'
+	##print 'feed form pass 2 class'
 	source = forms.ChoiceField(choices=news_sources)
-	#print news_sources
+	##print news_sources
 	sort = forms.ChoiceField(choices=sortBy)
 @login_required
 @csrf_exempt
 def feeds(request):
-	print request.user
-	print 'feed form pass 0'
+	#print request.user
+	#print 'feed form pass 0'
 	if request.method=="POST":
-		print request.POST.keys()
+		#print request.POST.keys()
 		if 'feed_id' in request.POST.keys():
-        	        print "pass1"
+        	        #print "pass1"
 			num = int(request.POST['feed_id'])
-			#print request.POST
+			##print request.POST
 			if request.user.is_authenticated():
 				data = functions.get_data(request.POST["sort"], request.POST["source"],request)
 				if not data[num]['saved']:
@@ -63,14 +63,14 @@ def feeds(request):
 						f.save()
 					else:
 						f = q[0]
-						print f
+						#print f
 						if len(q)>1:
 							print "Check DB, more than one feed with same context exist"
 					f.users.add(request.user)
-				 	print "pass2"
+				 	#print "pass2"
 
 			else:
-				print "no user logged in"
+				#print "no user logged in"
 				return redirect('/news/login/')
 	
 		current={'src':request.POST["source"], 'sort':request.POST["sort"]}
@@ -78,7 +78,7 @@ def feeds(request):
 		
 
 	else:
-		print 'feed form pass 1 initial'
+		#print 'feed form pass 1 initial'
 		data = functions.get_data('top','business-insider',request)
 		current={'src':'business-insider','sort':'top'}
 	feed_form = src_form()
@@ -91,29 +91,33 @@ def feeds(request):
 @csrf_exempt
 def discussion(request):
 	if request.method == 'POST':
-		print "discussion-POST-pass0"
+		#print "discussion-POST-pass0"
 		p = int(request.POST.get('pg','1'))
 		nextfeeds = models.feed.objects.all()[(p-1)*5:p*5]
 		serializer = FeedSerializer(nextfeeds, many=True)
-		print type(serializer.data)
+		#print type(serializer.data)
 		return JsonResponse(serializer.data, safe=False)
 	else:
-		print 'discussion-initial'
+		#print 'discussion-initial'
 		return render(request,'news/savedfeeds.html')
 @csrf_exempt
 def comment(request):
 	if request.method == 'POST':
-		print 'loading comm feed-'+request.POST['feed_id']
+		#print 'loading comm feed-'+request.POST['feed_id']
 		feed_id = int(request.POST['feed_id'])
 		comments = models.comment.objects.filter(key__id = feed_id)
 		serializer = CommentSerializer(comments, many=True)
-		#print serializer.data
+		##print serializer.data
 		return JsonResponse(serializer.data, safe=False)
+	else:
+		return redirect(discussion)
+'''
 @csrf_exempt
 def comment_save(request):
 	if request.method == 'POST':
 		c = models.comment(comment = request.POST['comment'], key = models.feed.objects.filter(id = int(request.POST['feed_id']))[0], user = request.user)
 		c.save()
+'''
 ################
 
 """
@@ -128,28 +132,28 @@ def login_view(request):
 					login(request, user)
 					if request.POST["rme"]=="yes":
 						HttpResponse.set_signed_cookie('username',username,salt='',max_age= 60*60*24*365 ,expires=None, path='/',domain=None,secure=None,httponly=True)
-					print "2"
+					#print "2"
 					return redirect(feeds)
 				else:
 					return HttpResponse("Hello "+username+"! Sorry, but your account has been disabled.")
 			else:
 				return HttpResponse("Invalid Credentials")
 		else:
-			print"a"
+			#print"a"
 			return render(request,'news/login.html')
 	else:
-		print"1"
+		#print"1"
 		return redirect(feeds)
 """
 ##################
 
 def login_view(request):
-	print "pass login-view-0"
+	#print "pass login-view-0"
 	if request.user.is_authenticated():
 		return redirect(feeds) 
 	else:
 		if request.method=="POST":
-			print "pass login-views-1-POST"
+			#print "pass login-views-1-POST"
 			if not request.POST.get('rem_me',None):
 				request.session.set_expiry(0)
 		return auth_views.login(request)
@@ -157,22 +161,22 @@ def login_view(request):
 ##################
 """
 def signup_view(request):
-	print request.user
-	print 1
+	#print request.user
+	#print 1
 	if(not(request.user.is_authenticated())):
 		if request.method=='POST':
 			if request.POST["password"]==request.POST["conf_password"]:
 				name=request.POST["name"]
 				namearr= name.split(' ',2)
-				print 2
-				print namearr
+				#print 2
+				#print namearr
 				user=User.objects.create_user( request.POST["username"] , request.POST["email"] , request.POST["password"] )
 				user.first_name=namearr[0]
 				user.last_name=namearr[1]
 				user.save()
 				login(request, user)
 				#return redirect(profile)
-				#print "User created successfully"
+				##print "User created successfully"
 				return HttpResponse("User created successfully")
 			else:
 				return HttpResponse("Passwords do not match")
@@ -182,10 +186,10 @@ def signup_view(request):
 		return redirect(feeds)
 """
 ###############
-
+'''
 def signup_form(request):
 	if request.method=='POST':
-		print "pass signup-0-POST"
+		#print "pass signup-0-POST"
 		form = UserCreationForm(request.POST)
 		if form.is_valid():
 			user = form.save()
@@ -197,7 +201,7 @@ def signup_form(request):
 	else:
 		form = UserCreationForm()
 	return render(request,'news/signup2.html',{'form':form})	
-
+'''
 #################
 class UserProfileForm(forms.ModelForm):
 	class Meta:
@@ -207,22 +211,22 @@ class UserProfileForm(forms.ModelForm):
 
 	
 def register(request):	
-	print request.user
-	print "pass-signu-0"
-	print models.UserProfile._meta.get_fields()
+	#print request.user
+	#print "pass-signu-0"
+	#print models.UserProfile._meta.get_fields()
 
 	if request.user.is_authenticated():
 		return redirect(feeds)
 	
 	elif request.method=="POST" or request.method=="FILES":
-		print "pass-signup-1-POST"
+		##print "pass-signup-1-POST"
 		ucf=UserCreationForm(request.POST, prefix="usercreate")
 		#uf=UserForm(request.POST, prefix='user')
 		upf=UserProfileForm(request.POST, request.FILES, prefix='userprofile')
-		print ucf.is_valid()
-		print upf.is_valid()
+		##print ucf.is_valid()
+		##print upf.is_valid()
 		if ucf.is_valid() and upf.is_valid():
-			print "pass-signup-2-valid"
+			#print "pass-signup-2-valid"
 			user=ucf.save()
 			#user=uf.save(commit="false")
 			userprofile = upf.save(commit="False")
@@ -249,20 +253,20 @@ def register(request):
 	return render(request,'news/signup.html',context)
 
 ###############
-
+@login_required
 def profile(request, username):
-	print "profile-"+username			
+	##print "profile-"+username			
 	user = get_object_or_404(User, username = username)
 	serializer = UserSerializer(user)
-	print True if request.user.username==username else False 
+	##print True if request.user.username==username else False 
 	###
 	if request.method=='POST' and request.user.username==username and authenticate(username=username, password = request.POST['password']) is not None:
-		print request.POST.keys()
-		print type(request.POST)
+		#print request.POST.keys()
+		#print type(request.POST)
 		ign = ['csrfmiddlewaretoken','password']
 		gen = (key for key in request.POST if key not in ign)
 		for key in gen:
-			#print key +'-' +request.POST[key]
+			##print key +'-' +request.POST[key]
 			try:
 				setattr(user, key ,request.POST[key])
 				user.save(update_fields=[key])
@@ -271,7 +275,7 @@ def profile(request, username):
 					setattr(user.userprofile, key, request.POST[key])
 					user.userprofile.save(update_fields=[key])
 				except:
-					print 'error'
+					#print 'error'
 					raise
 					return None
 		return render(request,'news/user_profile.html', {'data':serializer.data,'auth':True if request.user.username==username else False, 'notify':'user_profile_updated_successfully!'})

@@ -29,14 +29,16 @@ $(document).ready(function(){
 			data:{'feed_id': feed_id, 
 				'source': '{{current.src}}' ,
 				'sort': '{{current.sort}}' },
-			success:function(response){ 
-				$("#"+feed_id).addClass('disabled');
-			},
+			success:function(response){disablebtn(feed_id)},
 			complete:function(){},
 			error:function(xhr, textStatus, thrownError){}
 		});
 	});
-
+	function disablebtn(id){
+		console.log('success-'+id)
+		$('#'+id).prop('disabled',true);
+		$('#'+id).text('Saved')}
+	
 	$("#id_sort").change(function(){update();});
 	$("#id_source").change(function(){update()});
 	
@@ -50,8 +52,8 @@ $(document).ready(function(){
 
 <nav>
 	<a href = "/news/">Home</a>
-	<a href = "/news/profile/">My Profile</a>
-	<a href = "/news/saved/">My Fav</a>
+	<a href = "/news/profile/{{request.user.username}}">My Profile</a>
+	<a href = "/news/discussion">Discussion</a>
 	<a href = "/news/logout">Log Out</a>
 </nav>
 
