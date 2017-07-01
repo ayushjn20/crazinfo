@@ -1,17 +1,173 @@
 <!DOCTYPE html>
 <html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 <script>
-console.log('{{data.username}}')
+$(document).ready(function(){
+	
+		{% if notify %}
+			alert('{{notify}}');
+		{% endif %}
+		
+
+	window.setTimeout(function(){
+		$('#in-phoneNo').val('');
+		get_form_info();
+	},10);
+
+	
+function get_form_info(){
+$('.f-input').each(function(){
+	console.log($(this).attr('name'))
+	console.log($(this).val())
+})}
+if ('{{auth}}' === 'True') {
+
+	console.log('{{data.username}}')
+	
+	$('.f-span').click(function(){
+	//console.log(this.id)
+	$(this).hide()
+	$("#in-"+this.id).show()
+	$('#in-'+this.id).val($(this).text())
+	$('#in-'+this.id).focus()	
+	
+	$('#btn-submit').show()
+	$('#btn-reset').show()
+});
+
+	$(document).on('keydown','.f-input', function(e){
+		//console.log(event.which)
+		if(e.which==27){
+	//	console.log('esc-'+this.id)
+		$(this).hide()
+		$(this).val('')
+		$('#'+this.id.replace('in-','')).show()
+		}
+		else if(e.which==13){ e.preventDefault(); console.log('enter key'); return false;}
+});
+
+	$('#btn-submit').click(function(){
+		$('#dialog').show()
+		$('#btn-submit-d').show()
+		$('#in-password').show()
+		console.log('btn-submit')
+		$('#in-password').focus()
+});
+	
+	$('#btn-close').click(function(){location.reload(true)});
+	$('#btn-reset').click(function(){
+		location.reload(true)
+	})
+
+	$('#btn-submit-d').click(function(){
+		console.log('form info-ini')
+		get_form_info()
+		$('.f-input').each(function(){
+			if ($(this).val()===$('#'+this.id.replace('in-','')).text() || !Boolean($(this).val())) $(this).remove();
+		});
+		console.log('form info-fin')
+		get_form_info()
+		$('#profile-form').submit()
+	});
+
+
+}});
 </script>
+
+
+<style>
+#profile-form>div>input, button{
+display:none;
+text-align:center;
+}
+
+#username-div, #in-username{
+	margin:auto;
+	text-align:center;
+	font-size: 30px;
+	font-weight:bold;
+	display:block;
+}
+#bio-div{
+	margin:auto;
+	text-align:center;
+	display:block;
+}
+
+#dialog{
+	display:none;
+	position: fixed;
+	top: 0px;
+	margin:auto;
+	z-index=1;
+	background-color:rgba(0,0,0,.5);
+	width:100%;
+	height:100%;
+}
+#d-content{
+	background-color:white;
+	margin:auto;
+	text-align:center;
+	padding:20px;
+	width:80%;
+	border:1px solid black;
+}
+</style>
+
+
 <body>
-<form>
+{% load static %}
 {% if data %}
-YES
-	<tr>
-		<th><th>
-		<td></td>
-	</tr>
-{% endif %}
+<form action='' method='POST' id="profile-form">
+	
+	<div id='username-div'>
+	<img src='/static/images/{{data.userprofile.dp_url}}' width = 40%><br>
+	<span class='f-span' id='username' title='Username'>{{data.username}}</span>
+	<input class='f-input' type='text' name='username' id='in-username'>
+	<br>
+	</div>
+	<div id='bio-div'>
+	<span class='f-span' id='bio' title='Bio'>{{data.userprofile.Bio}}</span>
+	<input type='text' name='Bio' class='f-input' id='in-bio'>
+	</div><br>
+<br><br><br>
+{% csrf_token %}
+	<div>
+		<b>Name: </b>
+		<span class='f-span' id='first_name'>{{data.first_name}}</span>
+		<input type='text' class='f-input' id='in-first_name' name='first_name'>
+		<span> </span>
+		<span class='f-span' id='last_name'>{{data.last_name}}</span>
+		<input class='f-input' type='text' name="last_name" id = 'in-last_name'>
+	</div><br>
+
+	<div>
+		<b>E-Mail Id: </b>
+		<span class='f-span' id='email'>{{data.email}}</span>
+		<input class='f-input' type="email" name="email" id='in-email'>
+	</div><br>
+
+	<div>
+		<b>Phone No.: </b>
+		<span class='f-span' id='phoneNo'>{{data.userprofile.phoneNo}}</span>
+		<input class='f-input' id='in-phoneNo' type="text" name="phoneNo" maxlength="12" autocomplete='off'>
+	</div><br>
+	<div>
+		<button id='btn-submit' type='button'>Save Changes</button>
+		<input type='reset' id='btn-reset' value='Cancel'>
+	</div><br>
+	<div id='dialog'>
+		<div id='d-content'>
+		
+		<label name='password'>Confirm your password: </label>
+		<input type='password' name='password' id='in-password' required>
+		<button id='btn-submit-d' type='button' style='display:inline-block;'>Save</button>
+		<span id='btn-close' style='float:right; cursor:default;'>&times;</span>
+		</div>
+	</div>
 </form>
+{% endif %}
 </body>
 </html>

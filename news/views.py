@@ -251,9 +251,29 @@ def register(request):
 ###############
 
 def profile(request, username):
-	print "profile-"+username
+	print "profile-"+username			
 	user = get_object_or_404(User, username = username)
-	#userprof = get_object_or_404(models.UserProfile, user = user)
 	serializer = UserSerializer(user)
-	print serializer.data
-	return render(request,'news/user_profile.html', {'data':serializer.data,})
+	print True if request.user.username==username else False 
+	###
+	if request.method=='POST' and request.user.username==username and authenticate(username=username, password = request.POST['password']) is not None:
+		print request.POST.keys()
+		print type(request.POST)
+		ign = ['csrfmiddlewaretoken','password']
+		gen = (key for key in request.POST if key not in ign)
+		for key in gen:
+			#print key +'-' +request.POST[key]
+			try:
+				setattr(user, key ,request.POST[key])
+				user.save(update_fields=[key])
+			except:
+				try:
+					setattr(user.userprofile, key, request.POST[key])
+					user.userprofile.save(update_fields=[key])
+				except:
+					print 'error'
+					raise
+					return None
+		return render(request,'news/user_profile.html', {'data':serializer.data,'auth':True if request.user.username==username else False, 'notify':'user_profile_updated_successfully!'})
+	else:
+		return render(request,'news/user_profile.html', {'data':serializer.data,'auth':True if request.user.username==username else False})
