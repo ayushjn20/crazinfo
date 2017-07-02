@@ -1,5 +1,5 @@
 from django.contrib import admin
-from news.models import feed, UserProfile, comment, reply
+from news.models import feed, UserProfile, comment
 
 # Register your models here.
 class feedAdmin(admin.ModelAdmin):
@@ -16,6 +16,3 @@ admin.site.register(UserProfile, UP_Admin)
 class CommentAdmin(admin.ModelAdmin):
 	list_display = ['id','comment','user','key']
 admin.site.register(comment,CommentAdmin)
-class ReplyAdmin(admin.ModelAdmin):
-	list_display = ['id','reply','user','key']
-admin.site.register(reply,ReplyAdmin)

@@ -9,7 +9,8 @@ def get_data(sort, source, request):
 	if data["status"]=="ok":
 		articles=data["articles"]
 		#i=0
-		for i in range(0,len(articles)):
-                      	articles[i]['saved']=models.feed.objects.filter(title = articles[i]["title"], users = request.user).exists()
-			print str(i) +','+str(articles[i]['saved'])
+		if request.user.is_authenticated():
+			for i in range(0,len(articles)):
+                	      	articles[i]['saved']=models.feed.objects.filter(title = articles[i]["title"], users = request.user).exists()
+		#		print str(i) +','+str(articles[i]['saved'])
 		return articles

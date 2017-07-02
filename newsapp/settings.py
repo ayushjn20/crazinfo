@@ -134,6 +134,10 @@ CHANNEL_LAYERS = {
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 LOGGING = {
     'version': 1,
@@ -142,12 +146,23 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
+	'applogfile': {
+        'level':'DEBUG',
+        'class':'logging.handlers.RotatingFileHandler',
+        'filename': os.path.join(BASE_DIR, 'news.log'),
+        'maxBytes': 1024*1024*5, # 5MB
+        'backupCount': 10,
+    	},
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console','applogfile'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
         },
+	'news':{
+            'handlers': ['applogfile',],
+            'level': 'DEBUG',
+	},
     },
 }
 STATIC_URL = '/static/'

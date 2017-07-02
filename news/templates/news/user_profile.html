@@ -9,6 +9,9 @@ $(document).ready(function(){
 			alert('{{notify}}');
 		{% endif %}
 		
+	if($('img')).eq(0).attr('src')=='None'){
+		$('img').eq(0).attr('src','static/images/default.png')
+	}
 
 	window.setTimeout(function(){
 		$('#in-phoneNo').val('');

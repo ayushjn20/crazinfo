@@ -30,19 +30,3 @@ class comment(models.Model):
 	key = models.ForeignKey('feed')
 	user=models.ForeignKey(User, null=True, blank=True)
 	comment = models.TextField()
-
-	#def __unicode__(self):
-	#	return self.id
-	
-class reply(models.Model):
-	reply = models.TextField()
-	key = models.ForeignKey('comment')
-	user = models.ForeignKey(User, null=True, blank=True)
-
-	#def __unicode__(self):
-	#	return self.id
-
-class Room(models.Model):
-	name = models.TextField()
-	label = models.SlugField(unique=True)
-

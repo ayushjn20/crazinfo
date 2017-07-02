@@ -1,43 +1,53 @@
 <!DOCTYPE html>
-<html><head>
+<html>
+<head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
+<style>
+.input-comm{
+	width:75%;
+	max-width:400px;
+}
 
+.comments-div{
+	max-height:200px;
+	overflow-y:auto;
+	padding:10px;
+	width:75%;
+	max-width:410px;
+}
+.comments-div::-webkit-scrollbar {
+	width:0.3em;
+}
+.comments-div::-webkit-scrollbar-track{
+	box-shadow: inset 0 0 0.2em rgba(0,0,0,1);
+}
+.comments-div::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+}
+</style>
 </body>
 <nav>
         <a href = "/news/">Home</a>
-       <a href = "/news/profile/{{request.user.uesrname}}">My Profile</a>
+	<a href = "/news/profile/{{request.user.username}}">{{request.user.username}}</a>
         <a href = "/news/discussion/">Discussion</a>
 	<a href = "/news/logout/">LogOut</a>
 </nav>
 {% load static %}
-<div id="main"><hr>
-<!--{% load staticfiles %}
-{% if data %}
-        {% for element in data %}
-        <div onclick='//window.open("{{element.url}}","_blank");'>
-                <img class="news-img" src= "{{ element.urlToImage }}" alt="img-for-feed" height=100px />
-                <h4><b>{{element.title}}</b></h4>
-                <p>{{element.description}}</p>
-		<p style="float:right; padding-right:50px;">-{{element.source}}</p><br>
-                <script>
-                        //console.log('{{element.saved}}');
-                        if ('{{element.saved}}'==='False'){
-                        document.write('<button class="save">Save</button>') 
-                }
-                </script>
-                <br>
-                <br><hr>
-        </div>
-        {% endfor %}
-{% endif %} -->
-</div>
 {% csrf_token %}
+<div id="main"><hr>
+
+</div>
+
 
 </body>
 
 <script>
 
+
+function fullStory(url){
+        window.open(url,"blank");
+}
 
 $(document).ready(function(){
 
@@ -77,11 +87,10 @@ function load(){
 function append_data(response){
 	console.log(response);
 	for (var key in response){
-		$('<div><div id="usrs-'+response[key].id+'"></div><br><img class="news-img" src="'+response[key].urlToImage+'" alt="img-for-feed" height=100px><h4><b>'+response[key].title+'</b></h4><p>'+response[key].description+'</p><p style="float:right; padding-right:50px">--'+response[key].source+'</p><br><br><div id="comm-'+response[key].id+'"></div><br><button class="comments" id="'+response[key].id+'">Comments</button><br><br></div><hr>').appendTo("#main");
+		$('<div><div id="usrs-'+response[key].id+'"></div><br><img class="news-img" src="'+response[key].urlToImage+'" alt="img-for-feed" height=100px><h4><b>'+response[key].title+'</b></h4><p>'+response[key].description+'</p><p style="float:right; padding-right:50px">--'+response[key].source+'</p><br><br><div class="comments-div" id="comm-'+response[key].id+'"></div><div id="comm-in-'+response[key].id+'"></div><br><button class="comments" id="'+response[key].id+'">Comments</button><span onclick="fullStory(\''+response[key].url+'\')" style="cursor:pointer; float:right; margin-right:50px;" title="Click to read full story">&rArr;</span><br><br></div><hr>').appendTo("#main");
 		for (var k in response[key].users){
 		$('#usrs-'+response[key].id).append('<a href="/news/profile/'+response[key].users[k].username+'">'+response[key].users[k].username+'</a> , ')
-	}
-	
+		}
 }
 }
 
@@ -93,13 +102,12 @@ $(document).on('click','.comments', function(){
 		type:'POST',
 		url:'/news/discussion/comments/',
 		data:{'feed_id':feed_id,},
-		success: function(response){load_comm(response,feed_id); //console.log(response)
-}
-	
+		success: function(response){load_comm(response,feed_id);}//console.log(response)	
 	});
+
 	var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 	var socket = new WebSocket(ws_scheme + '://' + window.location.host + '/news/'+feed_id);
-	
+
 	
 	//console.log(socket)
 	socket.onmessage = function(message){
@@ -107,7 +115,7 @@ $(document).on('click','.comments', function(){
 		data = JSON.parse(message.data)
 		feed_id = String(data.key)
 		//console.log()
-		$('#new-comm-'+feed_id).append('<b><a href="/news/profile/'+data.user.username+'">'+data.user.username+': </a></b><span> '+data.comment+'</span>')	
+		$('#new-comm-'+feed_id).append('<b><a href="/news/profile/'+data.user.username+'">'+data.user.username+'</a>: </b><span> '+data.comment+'</span><br>')	
 	}
 
 	$(document).on('keypress', '.input-comm', function(event){
@@ -134,19 +142,25 @@ $(document).on('click','.comments', function(){
 
 
 function load_comm(response, feed_id){
+	$('#comm-'+feed_id).css('border','0.01px solid #cecece')
 	for (var key in response){
 		$('#comm-'+feed_id).append('<div><b><a href="/news/profile/'+response[key].user.username+'">'+response[key].user.username+'</a>: </b><span> '+response[key].comment+'</span></div>')
 }
-$('#comm-'+feed_id).append('<div id = "new-comm-'+feed_id+'"></div><label><b><a href="/news/profile/{{request.user.username}}">{{request.user.username}}</a>: </b></label><input class="input-comm" id="input-comm-'+feed_id+'" type="text" name="comment" required>')
+$('#comm-'+feed_id).append('<div id = "new-comm-'+feed_id+'"></div>')
+$('#comm-in-'+feed_id).append('<label><b><a href="/news/profile/{{request.user.username}}">{{request.user.username}}</a>: </b></label><input class="input-comm" id="input-comm-'+feed_id+'" type="textbox" name="comment" required>')
 $("#"+feed_id).attr('class','comments-close');
 $("#"+feed_id).text('Close');
 }
  
-$(document).on('click','.comments-close', function(){
+	$(document).on('click','.comments-close', function(){
+		//socket.close();
 		$("#comm-"+this.id).empty();
+		$("#comm-in-"+this.id).empty();
 		$("#"+this.id).attr('class','comments');
 		$("#"+this.id).text('Comments');
+		$('#comm-'+this.id).css('border','none')
 });
+
 
 });
 

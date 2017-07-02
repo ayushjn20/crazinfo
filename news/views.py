@@ -35,11 +35,11 @@ sortBy=(
 
 
 class src_form(forms.Form):
-	##print 'feed form pass 2 class'
+	#print 'feed form pass 2 class'
 	source = forms.ChoiceField(choices=news_sources)
-	##print news_sources
+	#print news_sources
 	sort = forms.ChoiceField(choices=sortBy)
-@login_required
+
 @csrf_exempt
 def feeds(request):
 	#print request.user
@@ -49,25 +49,30 @@ def feeds(request):
 		if 'feed_id' in request.POST.keys():
         	        #print "pass1"
 			num = int(request.POST['feed_id'])
-			##print request.POST
+			#print request.POST['title']
 			if request.user.is_authenticated():
 				data = functions.get_data(request.POST["sort"], request.POST["source"],request)
-				if not data[num]['saved']:
-					q =  models.feed.objects.filter(title=data[num]['title'])
-					if not q.exists():
-						reqData=data[num]
-						reqData.pop('saved',None)
-						f = models.feed(**reqData)
-						f.save()
-						f.source = request.POST['source']
-						f.save()
-					else:
-						f = q[0]
-						#print f
-						if len(q)>1:
-							print "Check DB, more than one feed with same context exist"
-					f.users.add(request.user)
-				 	#print "pass2"
+				#print data[num]['title']
+				if request.POST['title'] == data[num]['title']:
+					if not data[num]['saved']:
+						q =  models.feed.objects.filter(title=data[num]['title'])
+						#print 'saving...'
+						if not q.exists():
+							reqData=data[num]
+							reqData.pop('saved',None)
+							f = models.feed(**reqData)
+							f.save()
+							f.source = request.POST['source']
+							f.save()
+						else:
+							f = q[0]
+							#print f
+							if len(q)>1:
+								print "Check DB, more than one feed with same context exist"
+						f.users.add(request.user)
+					 	#print "pass2"
+				else:
+					return HttpResponse(status=500)
 
 			else:
 				#print "no user logged in"
@@ -93,10 +98,11 @@ def discussion(request):
 	if request.method == 'POST':
 		#print "discussion-POST-pass0"
 		p = int(request.POST.get('pg','1'))
-		nextfeeds = models.feed.objects.all()[(p-1)*5:p*5]
-		serializer = FeedSerializer(nextfeeds, many=True)
-		#print type(serializer.data)
-		return JsonResponse(serializer.data, safe=False)
+		if p*5-5 <= models.feed.objects.count():
+			nextfeeds = models.feed.objects.all()[(p-1)*5:p*5]
+			serializer = FeedSerializer(nextfeeds, many=True)
+			#print type(serializer.data)
+			return JsonResponse(serializer.data, safe=False)
 	else:
 		#print 'discussion-initial'
 		return render(request,'news/savedfeeds.html')
@@ -107,7 +113,7 @@ def comment(request):
 		feed_id = int(request.POST['feed_id'])
 		comments = models.comment.objects.filter(key__id = feed_id)
 		serializer = CommentSerializer(comments, many=True)
-		##print serializer.data
+		#print serializer.data
 		return JsonResponse(serializer.data, safe=False)
 	else:
 		return redirect(discussion)
@@ -176,7 +182,7 @@ def signup_view(request):
 				user.save()
 				login(request, user)
 				#return redirect(profile)
-				##print "User created successfully"
+				#print "User created successfully"
 				return HttpResponse("User created successfully")
 			else:
 				return HttpResponse("Passwords do not match")
@@ -219,12 +225,12 @@ def register(request):
 		return redirect(feeds)
 	
 	elif request.method=="POST" or request.method=="FILES":
-		##print "pass-signup-1-POST"
+		#print "pass-signup-1-POST"
 		ucf=UserCreationForm(request.POST, prefix="usercreate")
 		#uf=UserForm(request.POST, prefix='user')
 		upf=UserProfileForm(request.POST, request.FILES, prefix='userprofile')
-		##print ucf.is_valid()
-		##print upf.is_valid()
+		#print ucf.is_valid()
+		#print upf.is_valid()
 		if ucf.is_valid() and upf.is_valid():
 			#print "pass-signup-2-valid"
 			user=ucf.save()
@@ -253,12 +259,12 @@ def register(request):
 	return render(request,'news/signup.html',context)
 
 ###############
-@login_required
+
 def profile(request, username):
-	##print "profile-"+username			
+	#print "profile-"+username			
 	user = get_object_or_404(User, username = username)
 	serializer = UserSerializer(user)
-	##print True if request.user.username==username else False 
+	#print True if request.user.username==username else False 
 	###
 	if request.method=='POST' and request.user.username==username and authenticate(username=username, password = request.POST['password']) is not None:
 		#print request.POST.keys()
@@ -266,7 +272,7 @@ def profile(request, username):
 		ign = ['csrfmiddlewaretoken','password']
 		gen = (key for key in request.POST if key not in ign)
 		for key in gen:
-			##print key +'-' +request.POST[key]
+			#print key +'-' +request.POST[key]
 			try:
 				setattr(user, key ,request.POST[key])
 				user.save(update_fields=[key])

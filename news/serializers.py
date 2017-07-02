@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from news.models import feed, UserProfile, comment, reply
+from news.models import feed, UserProfile, comment
 from django.contrib.auth.models import User
 '''
 class FeedSerializer(serializers.Serializer):
@@ -53,8 +53,3 @@ class CommentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = comment
 		fields = ('user','comment','key')
-class ReplySerializer(serializers.ModelSerializer):
-	user = UserSerializer_red(read_only=True)
-	class Meta:
-		model = comment
-		fields = ('user','reply','key')

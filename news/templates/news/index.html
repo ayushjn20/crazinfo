@@ -1,3 +1,7 @@
+<!DOCTYPE html>
+<html>
+
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 {% load staticfiles %}
 <script type="text/javascript">
@@ -8,9 +12,11 @@ $(document).ready(function(){
 	$("#id_sort").val('{{current.sort}}')
 	$("#id_source").val('{{current.src}}')
 	var x=0;
+
 	while(x < document.getElementsByClassName("save").length){
 		//console.log(x)
 		document.getElementsByClassName("save")[x].id=x;
+		$('.title').eq(x).attr('id','title-'+x)
 		x++;
 		if ($(".news-img").eq(x).attr('src')=="None"){
 			console.log("img"+x+" src found none");
@@ -22,22 +28,30 @@ $(document).ready(function(){
 		//event.preventDefault();
 		console.log(this.id);
 		var feed_id = this.id;
+		$('#'+feed_id).prop('disabled',true);
+		$('#'+feed_id).text('Saving...');
+		var title = $('#title-'+feed_id).text();
 		console.log("clicked btn-id - "+ feed_id);
 		$.ajax({
 			type:"POST",
 			url:"/news/",
-			data:{'feed_id': feed_id, 
+			data:{'feed_id': feed_id,
+				'title': title, 
 				'source': '{{current.src}}' ,
 				'sort': '{{current.sort}}' },
-			success:function(response){disablebtn(feed_id)},
+			success:function(response){disablebtn(feed_id);},
 			complete:function(){},
-			error:function(xhr, textStatus, thrownError){}
+			error:function(xhr, textStatus, thrownError){btnreset(feed_id); alert(xhr.status+ ' : ' + thrownError + ';\nPage will be reloaded'); location.reload()}
+			
 		});
 	});
 	function disablebtn(id){
 		console.log('success-'+id)
-		$('#'+id).prop('disabled',true);
 		$('#'+id).text('Saved')}
+	function btnreset(id){
+		$('#'+id).prop('disabled',false);
+		$('#'+id).text('Save')
+	}
 	
 	$("#id_sort").change(function(){update();});
 	$("#id_source").change(function(){update()});
@@ -49,31 +63,42 @@ $(document).ready(function(){
 });
 </script>
 
+<body>
 
 <nav>
 	<a href = "/news/">Home</a>
-	<a href = "/news/profile/{{request.user.username}}">My Profile</a>
+	 {% if request.user.is_authenticated %}
+	<a href = "/news/profile/{{request.user.username}}">{{request.user.username}}</a>
 	<a href = "/news/discussion">Discussion</a>
 	<a href = "/news/logout">Log Out</a>
+	{% else %}
+	<a href = '/news/login/'>LogIn</a>
+	<a href = '/news/signup'>SignUp</a> 
+	<p style="font-size:.4em;">Login to save feed and discuss</p>
+	{% endif %}
+	</div>
 </nav>
-
+<hr>
 <form action="" method="POST">{% csrf_token %}
     {{feed_form}}
 </form>
 <div><hr>
-{% load staticfiles %} 
+{% load static %} 
 {% if data %}	
 	{% for element in data %}
-	<div onclick='//window.open("{{element.url}}","_blank");'>
+	<div>
 		<img class="news-img" src= "{{ element.urlToImage }}" alt="img-for-feed" height=100px />
-		<h4><b>{{element.title}}</b></h4>
+		<h4 class='title'><b>{{element.title}}</b></h4>
 		<p>{{element.description}}</p>	
+		{% if request.user.is_authenticated %}
 		<script>
 			//console.log('{{element.saved}}');
 			if ('{{element.saved}}'==='False'){
 			document.write('<button class="save">Save</button>') 
 		}else{document.write('<button class="save" disabled>Saved</button>') }
 		</script>
+		{% endif %}
+		<span onclick='window.open("{{element.url}}","_blank");' style='cursor:pointer; float:right; margin-right:50px;' title='Click to read full story'>&rArr;</span>
 		<br>
 		<br><hr>
 	</div>	
@@ -84,3 +109,5 @@ $(document).ready(function(){
 <footer>
 	<p>CRAZINFO!!</p>
 </footer>
+</body>
+</html>
