@@ -1,0 +1,7 @@
+db.sqlite3
+key.txt.pub
+key.txt
+news/.pyc
+newsapp/.pyc
+news/migrations/*
+Screenshot_from_2017-05-06_21-56-23.png

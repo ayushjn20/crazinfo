@@ -36,7 +36,7 @@ DEBUG = True
 
 #TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','crazinfo.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1','crazinfo.herokuapp.com','localhost']
 
 
 # Application definition
@@ -139,6 +139,7 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+"""
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -165,6 +166,7 @@ LOGGING = {
 	},
     },
 }
+"""
 STATIC_URL = '/static/'
 LOGIN_URL='/news/login/'
 LOGIN_REDIRECT_URL='/news/'
