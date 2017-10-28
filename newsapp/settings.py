@@ -32,7 +32,7 @@ DATABASES['default'].update(db_from_env)
 SECRET_KEY = 'f50_i!-#i4v7u$!dqutwp3trr!wn5&v_mwf9j4dw1&m$97qzn%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 #TEMPLATE_DEBUG = True
 
