@@ -21,7 +21,7 @@ incremental==17.5.0
 msgpack-python==0.4.8
 olefile==0.44
 packaging==16.8
-Pillow==4.1.1
+Pillow==6.2.0
 Pygments==2.2.0
 pyparsing==2.2.0
 python-dateutil==1.5
