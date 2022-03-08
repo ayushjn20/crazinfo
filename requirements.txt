@@ -14,7 +14,7 @@ Django==1.11.2
 djangorestframework==3.6.3
 gunicorn==19.7.1
 heroku==0.1.4
-httpie==0.9.9
+httpie==3.1.0
 hyperlink==17.2.1
 idna==2.5
 incremental==17.5.0
